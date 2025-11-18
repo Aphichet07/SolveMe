@@ -1,12 +1,25 @@
 import { db } from '../utils/firebase.js';
-import { collection } from "firebase/firestore";
+import { collection, Timestamp } from "firebase/firestore";
 
 export const userSchema = {
-  name: String,
-  email: String,
-  password: String,
-  createdAt: Date,
-  updatedAt: Date
+  user_id : String,
+  line_id : String,
+  display_name : String,
+  avatar_url : String,
+  status : "active" | "banned" | "deleted",
+  is_ready : Boolean,
+  last_active_at : Timestamp,
+
+  //location
+  location : {
+    lat : Number,
+    lon : Number
+  },
+  last_active_at : Timestamp,
+  create_at : Timestamp,
+  update_at : Timestamp
+
+  //
 };
 
 const usersCollection = collection(db, 'users');
