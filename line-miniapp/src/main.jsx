@@ -6,9 +6,15 @@ import Header from './components/header.jsx'
 import Footer from './components/footer.jsx'
 import Home from './pages/Home.jsx'
 import LoadingPage from './pages/loading.jsx'
+import SearchBar from './components/searchbar.jsx'
+import SplashPage from "./pages/splashpage.jsx"
+import FooterNav from "./components/footer.jsx"
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <LoadingPage/>
+
+    <App />
+    <FooterNav />
   </StrictMode>,
 )
