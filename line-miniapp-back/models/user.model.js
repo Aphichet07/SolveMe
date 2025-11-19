@@ -18,8 +18,6 @@ export const userSchema = {
   last_active_at : Timestamp,
   create_at : Timestamp,
   update_at : Timestamp
-
-  //
 };
 
 const usersCollection = collection(db, 'users');

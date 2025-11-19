@@ -1,12 +1,23 @@
 import { db } from '../utils/firebase.js'
 import { collection, Timestamp } from 'firebase/firestore'
 
-const chat_messageSchemas = {
-
+const ChatRoomSchemas = {
+    match_id : String,
+    create_at : Timestamp,
 };
 
-const chat_messageCollection = collection(db,'chat_message');
+const ChatMessageSchemas = {
+    chat_message_id : String,
+    chat_room_id : String,
+    sender_id : String,
+    message : String,
+    create_at : Timestamp,
+};
 
-export { chat_messageCollection };
+const getMessagesCollection = (chatRoomId) => {
+  return collection(db, 'chat_rooms', chatRoomId, 'messages');
+};
 
-export default chat_messageCollection;
+export { getMessagesCollection };
+
+export default getMessagesCollection;
