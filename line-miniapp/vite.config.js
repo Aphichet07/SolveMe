@@ -6,5 +6,11 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss()
-  ],
+  ],server: {
+    host: true, 
+    allowedHosts: [
+      'subautomatically-reportable-tinisha.ngrok-free.dev', 
+    ],
+   
+  },
 })
