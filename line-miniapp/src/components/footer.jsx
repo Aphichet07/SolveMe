@@ -1,8 +1,6 @@
 
 import React from "react";
 
-
-
 export default function FooterNav({ onPlusClick, onProfileClick, onWalletClick }) {
   return (
     <div className="fixed bottom-0 inset-x-0 flex justify-center pointer-events-none z-40">
@@ -50,7 +48,7 @@ export default function FooterNav({ onPlusClick, onProfileClick, onWalletClick }
           +
         </button>
 
-        {/* ปุ่มซ้ายขวา */}
+
         <div
           className="
             absolute bottom-0 inset-x-0 h-16

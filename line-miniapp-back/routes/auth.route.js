@@ -1,10 +1,9 @@
 import authController from "../controllers/auth.controller.js"
 
 const authRoute = (route) =>{
-    route.get("/", ()=>{
-        console.log("test")
-    })
-    route.post("/line-login", authController.loginTo)
+
+    route.post("/enter", authController.enterApp)
+    route.post("/ready", authController.setReady);
 }
 
 export default authRoute

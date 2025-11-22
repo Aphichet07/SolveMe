@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function CreateBubblePage({ profile, onBack, onCreated }) {
   const [title, setTitle] = useState("");
@@ -9,6 +9,23 @@ export default function CreateBubblePage({ profile, onBack, onCreated }) {
   const [errorMsg, setErrorMsg] = useState("");
 
   const userId = profile?.userId;
+  const [geo, setGeo] = useState(null);
+
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setGeo({
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude,
+        });
+      },
+      (err) => {
+        console.warn("geo error: ", err);
+      }
+    );
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,6 +41,7 @@ export default function CreateBubblePage({ profile, onBack, onCreated }) {
       description,
       expiresInMinutes: Number(minutes) || 0,
       userId,
+      location: geo
     };
 
     try {

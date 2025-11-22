@@ -1,25 +1,24 @@
 import { db } from '../utils/firebase.js'
 import { collection,Timestamp } from 'firebase/firestore'
 
-const paymentSchemas = {
-    payment_id : String,
-    match_id : String,
+export const paymentsCollection = collection(db, "payments");
 
-    requester_id : String,
-    helper_id : String,
+export function createPaymentDoc(overrides = {}) {
+  const now = Timestamp.now();
+  return {
+    payment_id: null,
+    match_id: null,
+    requester_id: null,
+    helper_id: null,
+    amount: 0,
+    status: "pending",
+    transaction_ref: "",
+    created_at: now,
+    paid_at: null,
+    ...overrides,
+  };
+}
 
-    amount : Number,
-    status : String,
-    transition_ref : String,
-    
-    create_at : Timestamp,
-    paid_at : Timestamp,
+export default paymentsCollection;
 
-};
-
-const paymentCollection = collection(db,'payment');
-
-export { paymentCollection};
-
-export default {paymentCollection};
 

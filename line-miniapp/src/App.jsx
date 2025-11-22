@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useEffect, useState } from "react";
 import { initLiff } from "./liff/init.js";
 import HomePage from "./pages/Home.jsx";
@@ -8,6 +7,7 @@ function App() {
   const [idToken, setIdToken] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
+  const [role, setRole] = useState(null);
 
   useEffect(() => {
     async function init() {
@@ -17,18 +17,15 @@ function App() {
 
         const liff = await initLiff();
 
-
         if (!liff.isLoggedIn()) {
-          liff.login(); 
+          liff.login();
           return;
         }
-
 
         const prof = await liff.getProfile();
         const token = liff.getIDToken();
 
-        console.log("LIFF profile:", prof);
-        console.log("LIFF ID token:", token);
+        console.log(prof)
 
         setProfile({
           displayName: prof.displayName,
@@ -37,6 +34,16 @@ function App() {
           statusMessage: prof.statusMessage,
         });
         setIdToken(token);
+
+        await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/enter`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            line_id: prof.userId,
+            display_name: prof.displayName,
+            avatar_url: prof.pictureUrl,
+          }),
+        });
       } catch (err) {
         console.error(err);
         setErrorMsg(err.message || "init LIFF ล้มเหลว");
@@ -47,6 +54,21 @@ function App() {
 
     init();
   }, []);
+
+  async function setReady(lineId, isReady) {
+    try {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/ready`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          line_id: lineId,
+          is_ready: isReady,
+        }),
+      });
+    } catch (err) {
+      console.error("setReady error:", err);
+    }
+  }
 
 
   if (loading) {
@@ -77,19 +99,57 @@ function App() {
     );
   }
 
-
   if (!profile) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <p className="text-sm text-slate-700">
-          ไม่สามารถดึงข้อมูลโปรไฟล์จาก LINE ได้
-        </p>
+        <p className="text-sm text-slate-700">ไม่สามารถดึงข้อมูลโปรไฟล์จาก LINE ได้</p>
       </div>
     );
   }
 
 
-  return <HomePage profile={profile} idToken={idToken} />;
+  if (!role) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex justify-center items-center">
+        <div className="w-full max-w-xs text-center">
+
+          <p className="text-sm mb-4 text-slate-600">คุณต้องการทำอะไร?</p>
+
+
+          <button
+            className="w-full h-10 bg-emerald-500 text-white rounded-xl text-sm mb-3 active:scale-95"
+            onClick={async () => {
+              setRole("requester");
+              await setReady(profile.userId, false);
+            }}
+          >
+            ขอความช่วยเหลือ (Requester)
+          </button>
+
+
+          <button
+            className="w-full h-10 bg-slate-800 text-white rounded-xl text-sm active:scale-95"
+            onClick={async () => {
+              setRole("solver");
+              await setReady(profile.userId, true);
+            }}
+          >
+            ฉันพร้อมช่วย (Solver)
+          </button>
+
+        </div>
+      </div>
+    );
+  }
+
+
+  return (
+    <HomePage
+      profile={profile}
+      idToken={idToken}
+      role={role}
+    />
+  );
 }
 
 export default App;

@@ -1,27 +1,29 @@
 import { db } from '../utils/firebase.js';
 import { collection, Timestamp} from 'firebase/firestore';
 
-export const problemsSchema = {
-    problem_id : Number,
-    requester_id : Number,
-
-    title : String,
-    description : String,
-    status : "open" | "in_progress" | "completed" | "cancelled",
-    reward : Number,
-
-    location : {
-        lat : Number,
-        lon : Number
-    },
-    created_at : Timestamp,
-    updated_at : Timestamp
+export const PROBLEM_STATUS = {
+  OPEN: "open",
+  IN_PROGRESS: "in_progress",
+  COMPLETED: "completed",
+  CANCELLED: "cancelled",
 };
 
-const problemsCollection = collection(db, 'problems');
+export function createProblemDoc(overrides = {}) {
+  const now = Timestamp.now();
+  return {
+    requester_id: null,
+    title: "",
+    description: "",
+    status: PROBLEM_STATUS.OPEN,
+    reward: 0,
+    location: null, 
+    created_at: now,
+    updated_at: now,
+    ...overrides,
+  };
+}
 
-
-export { problemsCollection };
-
+export const problemsCollection = collection(db, "problems");
 export default problemsCollection;
+
 

@@ -1,27 +1,30 @@
-import { db } from '../utils/firebase.js';
+import { db } from "../utils/firebase.js";
 import { collection, Timestamp } from "firebase/firestore";
 
-export const userSchema = {
-  user_id : String,
-  line_id : String,
-  display_name : String,
-  avatar_url : String,
-  status : "active" | "banned" | "deleted",
-  is_ready : Boolean,
-  last_active_at : Timestamp,
+export const usersCollection = collection(db, "users");
 
-  //location
-  location : {
-    lat : Number,
-    lon : Number
-  },
-  last_active_at : Timestamp,
-  create_at : Timestamp,
-  update_at : Timestamp
+export const USER_STATUS = {
+  ACTIVE: "active",
+  BANNED: "banned",
+  DELETED: "deleted",
 };
 
-const usersCollection = collection(db, 'users');
+export function createUserDoc(overrides = {}) {
+  const now = Timestamp.now();
 
-export { usersCollection };
+  return {
+    user_id: null,       
+    line_id: null,       
+    display_name: "",
+    avatar_url: "",
+    status: USER_STATUS.ACTIVE,
+    is_ready: false,
 
-export default usersCollection;
+    location: null,       
+    last_active_at: now,
+    created_at: now,
+    updated_at: now,
+
+    ...overrides,         
+  };
+}

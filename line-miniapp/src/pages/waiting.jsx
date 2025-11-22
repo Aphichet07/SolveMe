@@ -1,7 +1,6 @@
-// pages/WaitingForSolver.jsx
 import React, { useEffect, useState } from "react";
 
-export default function WaitingForSolverPage({ bubble, onBack }) {
+export default function WaitingForSolverPage({ bubble, onBack, onMatched }) {
     const [status, setStatus] = useState("searching"); // "searching" | "matched" | "timeout" | "error"
     const [matchedSolver, setMatchedSolver] = useState(null);
     const [errorMsg, setErrorMsg] = useState("");
@@ -13,22 +12,30 @@ export default function WaitingForSolverPage({ bubble, onBack }) {
 
         async function pollMatchStatus() {
             try {
-                // TODO: ปรับ endpoint ให้ตรงกับ backend จริงของคุณ
                 const res = await fetch(
-                    `${import.meta.env.VITE_API_BASE_URL}/bubbles/${bubble.id}/match-status`
+                    `${import.meta.env.VITE_API_BASE_URL}/api/bubbles/${bubble.id}/match-status`
                 );
+
                 if (!res.ok) {
                     throw new Error("เช็คสถานะ matching ไม่สำเร็จ");
                 }
+
                 const data = await res.json();
-                // ตัวอย่าง response สมมติ:
-                // { status: "SEARCHING" | "MATCHED" | "TIMEOUT", solver: { id, name, ... } }
+            
 
                 if (data.status === "MATCHED") {
                     setStatus("matched");
                     setMatchedSolver(data.solver || null);
                     clearInterval(intervalId);
-                    // TODO: ตรงนี้ในอนาคต: เปลี่ยนหน้าไปห้องแชท
+
+                    
+                    if (onMatched && data.matchId) {
+                        onMatched({
+                            bubble,
+                            matchId: data.matchId,
+                            solver: data.solver || null,
+                        });
+                    }
                 } else if (data.status === "TIMEOUT") {
                     setStatus("timeout");
                     clearInterval(intervalId);
@@ -43,15 +50,13 @@ export default function WaitingForSolverPage({ bubble, onBack }) {
             }
         }
 
-
         intervalId = setInterval(pollMatchStatus, 3000);
-
-        pollMatchStatus();
+        pollMatchStatus(); 
 
         return () => {
             if (intervalId) clearInterval(intervalId);
         };
-    }, [bubble?.id]);
+    }, [bubble?.id, onMatched]);
 
     const title = bubble?.title || "ปัญหาของคุณ";
     const description = bubble?.description || "";
@@ -62,7 +67,7 @@ export default function WaitingForSolverPage({ bubble, onBack }) {
                 return "กำลังหา solver ที่เหมาะสมที่สุดให้คุณ…";
             case "matched":
                 return matchedSolver
-                    ? `พบ solver: ${matchedSolver.name} แล้ว! กำลังพาเข้าสู่ห้องแชท…`
+                    ? `พบ solver: ${matchedSolver.name || "Solver"} แล้ว! กำลังพาเข้าสู่ห้องแชท…`
                     : "พบ solver แล้ว! กำลังพาเข้าสู่ห้องแชท…";
             case "timeout":
                 return "ยังไม่พบ solver ที่พร้อมช่วยในเวลานี้";
@@ -76,7 +81,6 @@ export default function WaitingForSolverPage({ bubble, onBack }) {
     return (
         <div className="min-h-screen bg-slate-50 flex justify-center">
             <div className="w-full max-w-md flex flex-col">
-
                 <header className="bg-white border-b border-slate-100">
                     <div className="h-12 px-4 flex items-center gap-3">
                         <button
@@ -91,9 +95,7 @@ export default function WaitingForSolverPage({ bubble, onBack }) {
                     </div>
                 </header>
 
-
                 <main className="flex-1 px-4 pt-6 pb-24 flex flex-col items-center">
-
                     <div className="w-20 h-20 rounded-full border-4 border-emerald-400 border-t-transparent animate-spin mb-4" />
 
                     <p className="text-sm text-slate-800 text-center mb-1">
