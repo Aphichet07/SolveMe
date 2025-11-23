@@ -1,6 +1,6 @@
 import axios from 'axios';
+import  Ai_service from '../main.py';
 
-// URL ของ AI Service (ต้องตรงกับ Port ที่ Python รันอยู่)
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://127.0.0.1:8000';
 
 export const analyzeBubble = async (text) => {
@@ -15,18 +15,13 @@ export const analyzeBubble = async (text) => {
         ]);
 
         return {
-            // ข้อมูลความด่วน (เอาไปใช้เลือกสีและขนาดฟองใน Frontend)
             urgency: urgencyRes.data.analysis, 
-            // ตัวอย่าง data.analysis: 
-            // { score: 85.5, sla: { tier: "P1", color: "#FF0000", size: "huge" } }
-
-            // ข้อมูล Keywords (เอาไปใช้ Search หรือ Tag)
             keywords: keywordRes.data.keywords 
             // ตัวอย่าง keywords: ["ยางแตก", "รถมอเตอร์ไซค์"]
         };
 
     } catch (error) {
-        console.error("⚠️ AI Service Error:", error.message);
+        console.error("AI Service Error:", error.message);
         
         // Fallback: ถ้า AI ล่ม ให้คืนค่า Default กลางๆ ไปก่อน (ระบบจะได้ไม่พัง)
         return {
@@ -54,7 +49,7 @@ export const rankHelpers = async (problemText, helpersList) => {
         });
         return response.data.matches;
     } catch (error) {
-        console.error("⚠️ AI Matching Error:", error.message);
+        console.error("AI Matching Error:", error.message);
         return helpersList; // ถ้าพัง ส่ง list เดิมกลับไป
     }
 };
