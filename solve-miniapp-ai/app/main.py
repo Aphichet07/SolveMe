@@ -3,9 +3,9 @@ from pydantic import BaseModel
 from typing import List
 
 # Import service จากไฟล์ที่เราสร้าง
-from app.nlp import nlp_service
-from app.matching import rank_helpers
-from app.translation import translator_service
+from nlp import nlp_service
+from matching import rank_helpers
+from translation import translator_service
 
 app = FastAPI(title="SolveMe AI Service")
 
