@@ -9,8 +9,8 @@ from sklearn.model_selection import train_test_split
 MODEL_NAME = 'paraphrase-multilingual-MiniLM-L12-v2'
 DATA_FILE = 'urgency_dataset.csv'
 OUTPUT_DIR = 'my_custom_model'
-EPOCHS = 5              
-BATCH_SIZE = 4          
+EPOCHS = 5   #เทรน 10 รอบ
+BATCH_SIZE = 8 #เทรนทีละ 8          
 LEARNING_RATE = 2e-5    
 
 # --- 2. เตรียมตัวอ่านข้อมูล (Dataset Class) ---
@@ -46,7 +46,7 @@ class UrgencyDataset(Dataset):
 
 # --- 3. ฟังก์ชันเทรน (Training Function) ---
 def train():
-    print(f"🚀 Starting Training with model: {MODEL_NAME}")
+    print(f"Starting Training with model: {MODEL_NAME}")
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Training on: {device}")
@@ -56,9 +56,9 @@ def train():
         df = pd.read_csv(DATA_FILE)
         # (FIX) บังคับแปลงคอลัมน์ label ให้เป็นตัวเลข (กันพลาด)
         df['label'] = pd.to_numeric(df['label'], errors='coerce').fillna(0).astype(int)
-        print(f"✅ Loaded {len(df)} examples from {DATA_FILE}")
+        print(f"Loaded {len(df)} examples from {DATA_FILE}")
     except FileNotFoundError:
-        print("❌ Error: ไม่พบไฟล์ dataset! กรุณาสร้างไฟล์ urgency_dataset.csv ก่อน")
+        print("Error: ไม่พบไฟล์ dataset! กรุณาสร้างไฟล์ urgency_dataset.csv ก่อน")
         return
 
     # โหลดสมองตั้งต้น
@@ -97,13 +97,13 @@ def train():
             total_loss += loss.item()
 
         avg_loss = total_loss / len(dataloader)
-        print(f"   📉 Average Loss: {avg_loss:.4f}")
+        print(f"Average Loss: {avg_loss:.4f}")
 
     # บันทึกโมเดล
-    print("\n💾 Saving model...")
+    print("\nSaving model...")
     model.save_pretrained(OUTPUT_DIR)
     tokenizer.save_pretrained(OUTPUT_DIR)
-    print(f"✅ Done! Model saved to folder: '{OUTPUT_DIR}'")
+    print(f" Done! Model saved to folder: '{OUTPUT_DIR}'")
 
 if __name__ == "__main__":
     train()
